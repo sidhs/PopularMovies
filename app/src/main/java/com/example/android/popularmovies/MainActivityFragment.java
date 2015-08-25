@@ -14,6 +14,10 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,6 +33,9 @@ public class MainActivityFragment extends Fragment {
 
     public MainActivityFragment() {
     }
+
+    ImageAdapter imageAdapter = new ImageAdapter(getActivity());
+    String[] resultStrs = new String[4];
 
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -82,7 +89,7 @@ public class MainActivityFragment extends Fragment {
             return 0;
         }
 
-        public View getView(int position, View counterView, ViewGroup parent){
+        public View getView(int position, View counterView, ViewGroup parent) {
 
             ImageView imageView;
 
@@ -97,33 +104,56 @@ public class MainActivityFragment extends Fragment {
             }
 
 
-            Picasso.with(getActivity().getApplicationContext()).load("http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg ").into(imageView);
+            Picasso.with(getActivity().getApplicationContext()).load("http://image.tmdb.org/t/p/w185/" + resultStrs[position]).into(imageView);
 
 
            // imageView.setImageResource(mThumbIds[position]);
 
+
+
             return imageView;
 
         }
-
         private Integer[] mThumbIds = {
-
                 R.drawable.ic_launcher,
                 R.drawable.ic_launcher,
                 R.drawable.ic_launcher,
                 R.drawable.ic_launcher,
-
         };
+
 
     }
 
-    public class FetchMovieTask extends AsyncTask<Void, Void, Void>{
+    public class FetchMovieTask extends AsyncTask<Void, Void, String[]>{
 
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
 
 
+        private String[] getMovieDataFromJson(String movieJsonStr)
+            throws JSONException{
+
+            JSONObject movieJson = new JSONObject(movieJsonStr);
+
+            JSONArray result = movieJson.getJSONArray("results");
+
+
+
+            for(int i = 0; i < 4;i++){
+
+                JSONObject movie = result.getJSONObject(i);
+               String poster_path =  movie.getString("poster_path");
+                resultStrs[i] = poster_path;
+                Log.v(LOG_TAG,poster_path);
+
+
+            }
+
+            return resultStrs;
+        }
+
+
         @Override
-        protected Void doInBackground(Void... params) {
+        protected String[] doInBackground(Void... params) {
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
             HttpURLConnection urlConnection = null;
@@ -182,7 +212,12 @@ public class MainActivityFragment extends Fragment {
                     }
                 }
             }
-
+            try {
+                 return getMovieDataFromJson(forecastJsonStr);
+            } catch (JSONException e) {
+                Log.e(LOG_TAG, e.getMessage(), e);
+                e.printStackTrace();
+            }
 
             return null;
         }
