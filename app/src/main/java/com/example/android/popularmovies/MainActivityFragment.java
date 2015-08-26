@@ -109,7 +109,7 @@ public class MainActivityFragment extends Fragment {
             }
 
 
-            Picasso.with(getActivity().getApplicationContext()).load("http://image.tmdb.org/t/p/w185/" + posterPath[position]).into(imageView);
+            Picasso.with(getActivity().getApplicationContext()).load("http://image.tmdb.org/t/p/w342/" + posterPath[position]).into(imageView);
 
 
            // imageView.setImageResource(mThumbIds[position]);
