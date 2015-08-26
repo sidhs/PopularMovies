@@ -29,9 +29,9 @@ import java.net.URL;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment {
+public class MovieFragment extends Fragment {
 
-    public MainActivityFragment() {
+    public MovieFragment() {
     }
 
    private ImageAdapter movieAdapter;
@@ -54,11 +54,6 @@ public class MainActivityFragment extends Fragment {
 
 
         gridView = (GridView) rootView.findViewById(R.id.gridview);
-
-
-        FetchMovieTask movieTask = new FetchMovieTask();
-        movieTask.execute();
-
 
         return rootView;
     }
@@ -116,7 +111,14 @@ public class MainActivityFragment extends Fragment {
 
         }
 
+    }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        FetchMovieTask movieTask = new FetchMovieTask();
+        movieTask.execute();
 
     }
 

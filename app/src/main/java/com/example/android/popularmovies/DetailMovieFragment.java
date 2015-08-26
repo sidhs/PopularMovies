@@ -9,9 +9,9 @@ import android.view.ViewGroup;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class DetailActivityFragment extends Fragment {
+public class DetailMovieFragment extends Fragment {
 
-    public DetailActivityFragment() {
+    public DetailMovieFragment() {
     }
 
     @Override
