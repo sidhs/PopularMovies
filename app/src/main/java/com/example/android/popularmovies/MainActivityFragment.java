@@ -60,9 +60,6 @@ public class MainActivityFragment extends Fragment {
         movieTask.execute();
 
 
-
-
-
         return rootView;
     }
 
@@ -112,7 +109,6 @@ public class MainActivityFragment extends Fragment {
             Picasso.with(getActivity().getApplicationContext()).load("http://image.tmdb.org/t/p/w342/" + posterPath[position]).into(imageView);
 
 
-           // imageView.setImageResource(mThumbIds[position]);
 
 
 
@@ -163,24 +159,20 @@ public class MainActivityFragment extends Fragment {
 
         @Override
         protected String[] doInBackground(Void... params) {
-            // These two need to be declared outside the try/catch
-            // so that they can be closed in the finally block.
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
 
-            // Will contain the raw JSON response as a string.
-            String forecastJsonStr = null;
+                 String forecastJsonStr = null;
 
             try {
 
                 URL url = new URL("http://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=12af43fb975a79eeadbdff3fdb5f67dc");
 
-                // Create the request to OpenWeatherMap, and open the connection
+
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect();
 
-                // Read the input stream into a String
                 InputStream inputStream = urlConnection.getInputStream();
                 StringBuffer buffer = new StringBuffer();
                 if (inputStream == null) {
@@ -191,9 +183,7 @@ public class MainActivityFragment extends Fragment {
 
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                    // But it does make debugging a *lot* easier if you print out the completed
-                    // buffer for debugging.
+
                     buffer.append(line + "\n");
                 }
 
