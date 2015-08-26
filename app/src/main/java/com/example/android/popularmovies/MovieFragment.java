@@ -38,6 +38,7 @@ public class MovieFragment extends Fragment {
 
     private ImageAdapter movieAdapter;
     GridView gridView;
+    String movieJsonStr = null;
 
 
     public void onCreate(Bundle savedInstanceState) {
@@ -61,7 +62,13 @@ public class MovieFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
 
-                Intent intent = new Intent(getActivity(), DetailActivity.class);
+                String itemId = String.valueOf(l);
+
+                //Toast.makeText(getActivity(),itemId,Toast.LENGTH_LONG).show();
+
+                Intent intent = new Intent(getActivity(), DetailActivity.class)
+                        .putExtra(Intent.EXTRA_TEXT,movieJsonStr)
+                        .putExtra("intId", itemId);
 
                 startActivity(intent);
             }
@@ -95,7 +102,7 @@ public class MovieFragment extends Fragment {
 
         public long getItemId(int position) {
 
-            return 0;
+            return position;
         }
 
         public View getView(int position, View counterView, ViewGroup parent) {
@@ -150,7 +157,7 @@ public class MovieFragment extends Fragment {
                 JSONObject movie = result.getJSONObject(i);
                 String poster_path = movie.getString("poster_path");
                 resultStrs[i] = poster_path;
-                Log.v(LOG_TAG, poster_path);
+              //  Log.v(LOG_TAG, poster_path);
 
 
             }
@@ -173,7 +180,7 @@ public class MovieFragment extends Fragment {
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
 
-            String forecastJsonStr = null;
+
 
             try {
 
@@ -202,8 +209,8 @@ public class MovieFragment extends Fragment {
                     // Stream was empty.  No point in parsing.
                     return null;
                 }
-                forecastJsonStr = buffer.toString();
-                Log.v(LOG_TAG, "Data fetched " + forecastJsonStr);
+                movieJsonStr = buffer.toString();
+               // Log.v(LOG_TAG, "Data fetched " + movieJsonStr);
 
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Error ", e);
@@ -223,7 +230,7 @@ public class MovieFragment extends Fragment {
                 }
             }
             try {
-                return getMovieDataFromJson(forecastJsonStr);
+                return getMovieDataFromJson(movieJsonStr);
             } catch (JSONException e) {
                 Log.e(LOG_TAG, e.getMessage(), e);
                 e.printStackTrace();
