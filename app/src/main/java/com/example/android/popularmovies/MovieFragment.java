@@ -1,6 +1,7 @@
 package com.example.android.popularmovies;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -34,26 +36,36 @@ public class MovieFragment extends Fragment {
     public MovieFragment() {
     }
 
-   private ImageAdapter movieAdapter;
+    private ImageAdapter movieAdapter;
     GridView gridView;
 
 
-    public void onCreate(Bundle savedInstanceState){
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setHasOptionsMenu(true);
     }
 
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView  = inflater.inflate(R.layout.fragment_main, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
 
         gridView = (GridView) rootView.findViewById(R.id.gridview);
+
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+
+                Intent intent = new Intent(getActivity(), DetailActivity.class);
+
+                startActivity(intent);
+            }
+        });
 
         return rootView;
     }
@@ -64,24 +76,24 @@ public class MovieFragment extends Fragment {
         private Context mContext;
         private String[] posterPath;
 
-        public ImageAdapter(Context c, String[] semiPosterPath){
+        public ImageAdapter(Context c, String[] semiPosterPath) {
 
             mContext = c;
             posterPath = semiPosterPath;
 
         }
 
-        public int getCount(){
+        public int getCount() {
 
             return posterPath.length;
         }
 
-        public Object getItem(int position){
+        public Object getItem(int position) {
 
             return null;
         }
 
-        public long getItemId(int position){
+        public long getItemId(int position) {
 
             return 0;
         }
@@ -90,22 +102,19 @@ public class MovieFragment extends Fragment {
 
             ImageView imageView;
 
-            if(counterView == null){
+            if (counterView == null) {
 
                 imageView = new ImageView(mContext);
 
 
-            }else{
+            } else {
 
                 imageView = (ImageView) counterView;
             }
 
+            String finalPath = "http://image.tmdb.org/t/p/w342/" + posterPath[position];
 
-            Picasso.with(getActivity().getApplicationContext()).load("http://image.tmdb.org/t/p/w342/" + posterPath[position]).into(imageView);
-
-
-
-
+            Picasso.with(getActivity().getApplicationContext()).load(finalPath).into(imageView);
 
             return imageView;
 
@@ -122,13 +131,13 @@ public class MovieFragment extends Fragment {
 
     }
 
-    public class FetchMovieTask extends AsyncTask<Void, Void, String[]>{
+    public class FetchMovieTask extends AsyncTask<Void, Void, String[]> {
 
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
 
 
         private String[] getMovieDataFromJson(String movieJsonStr)
-            throws JSONException{
+                throws JSONException {
 
             JSONObject movieJson = new JSONObject(movieJsonStr);
 
@@ -136,12 +145,12 @@ public class MovieFragment extends Fragment {
 
             String[] resultStrs = new String[result.length()];
 
-            for(int i = 0; i < resultStrs.length ;i++){
+            for (int i = 0; i < resultStrs.length; i++) {
 
                 JSONObject movie = result.getJSONObject(i);
-               String poster_path =  movie.getString("poster_path");
+                String poster_path = movie.getString("poster_path");
                 resultStrs[i] = poster_path;
-                Log.v(LOG_TAG,poster_path);
+                Log.v(LOG_TAG, poster_path);
 
 
             }
@@ -150,9 +159,9 @@ public class MovieFragment extends Fragment {
         }
 
         @Override
-        public void onPostExecute(String[] results){
+        public void onPostExecute(String[] results) {
 
-            movieAdapter = new ImageAdapter(getActivity(),results);
+            movieAdapter = new ImageAdapter(getActivity(), results);
             gridView.setAdapter(movieAdapter);
 
 
@@ -164,7 +173,7 @@ public class MovieFragment extends Fragment {
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
 
-                 String forecastJsonStr = null;
+            String forecastJsonStr = null;
 
             try {
 
@@ -194,7 +203,7 @@ public class MovieFragment extends Fragment {
                     return null;
                 }
                 forecastJsonStr = buffer.toString();
-                Log.v(LOG_TAG,"Data fetched " + forecastJsonStr);
+                Log.v(LOG_TAG, "Data fetched " + forecastJsonStr);
 
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Error ", e);
@@ -214,7 +223,7 @@ public class MovieFragment extends Fragment {
                 }
             }
             try {
-                 return getMovieDataFromJson(forecastJsonStr);
+                return getMovieDataFromJson(forecastJsonStr);
             } catch (JSONException e) {
                 Log.e(LOG_TAG, e.getMessage(), e);
                 e.printStackTrace();
