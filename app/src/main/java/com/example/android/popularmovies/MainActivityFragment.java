@@ -34,8 +34,9 @@ public class MainActivityFragment extends Fragment {
     public MainActivityFragment() {
     }
 
-    ImageAdapter imageAdapter = new ImageAdapter(getActivity());
-    String[] resultStrs = new String[4];
+   private ImageAdapter movieAdapter;
+    GridView gridView;
+
 
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -50,10 +51,10 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View rootView  = inflater.inflate(R.layout.fragment_main, container, false);
-        GridView gridView;
+
 
         gridView = (GridView) rootView.findViewById(R.id.gridview);
-        gridView.setAdapter(new ImageAdapter(getActivity()));
+
 
         FetchMovieTask movieTask = new FetchMovieTask();
         movieTask.execute();
@@ -65,18 +66,22 @@ public class MainActivityFragment extends Fragment {
         return rootView;
     }
 
+
     public class ImageAdapter extends BaseAdapter {
 
         private Context mContext;
+        private String[] posterPath;
 
-        public ImageAdapter(Context c){
+        public ImageAdapter(Context c, String[] semiPosterPath){
 
             mContext = c;
+            posterPath = semiPosterPath;
+
         }
 
         public int getCount(){
 
-            return mThumbIds.length;
+            return posterPath.length;
         }
 
         public Object getItem(int position){
@@ -104,7 +109,7 @@ public class MainActivityFragment extends Fragment {
             }
 
 
-            Picasso.with(getActivity().getApplicationContext()).load("http://image.tmdb.org/t/p/w185/" + resultStrs[position]).into(imageView);
+            Picasso.with(getActivity().getApplicationContext()).load("http://image.tmdb.org/t/p/w185/" + posterPath[position]).into(imageView);
 
 
            // imageView.setImageResource(mThumbIds[position]);
@@ -114,12 +119,7 @@ public class MainActivityFragment extends Fragment {
             return imageView;
 
         }
-        private Integer[] mThumbIds = {
-                R.drawable.ic_launcher,
-                R.drawable.ic_launcher,
-                R.drawable.ic_launcher,
-                R.drawable.ic_launcher,
-        };
+
 
 
     }
@@ -136,9 +136,9 @@ public class MainActivityFragment extends Fragment {
 
             JSONArray result = movieJson.getJSONArray("results");
 
+            String[] resultStrs = new String[result.length()];
 
-
-            for(int i = 0; i < 4;i++){
+            for(int i = 0; i < resultStrs.length ;i++){
 
                 JSONObject movie = result.getJSONObject(i);
                String poster_path =  movie.getString("poster_path");
@@ -149,6 +149,15 @@ public class MainActivityFragment extends Fragment {
             }
 
             return resultStrs;
+        }
+
+        @Override
+        public void onPostExecute(String[] results){
+
+            movieAdapter = new ImageAdapter(getActivity(),results);
+            gridView.setAdapter(movieAdapter);
+
+
         }
 
 
